@@ -1,0 +1,8 @@
+easyocr>=1.7.1
+pytesseract>=0.3.10
+opencv-python>=4.9.0
+pillow>=10.2.0
+pymupdf>=1.23.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+pytest>=8.0.0

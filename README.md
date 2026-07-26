@@ -2,38 +2,49 @@
 
 ## AI-Powered Government Scheme Eligibility & Recommendation Platform
 
-### Team Members
-
-- Backend Developer
-- Frontend Developer
-- AI & Integration (Project Lead)
+Eligify is an intelligent platform that simplifies government scheme discovery, verifies citizen document credentials using OCR, and provides transparent eligibility evaluation.
 
 ---
 
-## Tech Stack
+## 📚 Project Documentation
 
-### Frontend
-- React.js
-- Tailwind CSS
-
-### Backend
-- FastAPI
-- PostgreSQL
-
-### AI
-- Python
-- Rule-Based Eligibility Engine
-- OCR
+- [Project Context & Vision](docs/PROJECT_CONTEXT.md)
+- [System Architecture & Specifications](docs/ARCHITECTURE.md)
 
 ---
 
-## Workflow
+## 🛠️ Tech Stack
 
-1. User Registers/Login
-2. User Fills Profile
-3. Backend Stores Data
-4. AI Checks Eligibility
-5. AI Returns Eligible Schemes
-6. User Uploads Documents
-7. OCR Verifies Documents
-8. Dashboard Displays Results
+- **Frontend:** React.js, Vite, Tailwind CSS, Lucide Icons
+- **Backend:** FastAPI (Python), Pydantic, SQLAlchemy, PostgreSQL
+- **AI & OCR:** Python, Rule Evaluation Engine, EasyOCR / Tesseract
+
+---
+
+## 📁 Repository Structure Overview
+
+```text
+Eligify/
+├── docs/                      # Technical documentation & system specifications
+├── backend/                   # FastAPI REST API Application
+│   ├── app/                   # API routes, core settings, models, schemas, services
+│   ├── requirements.txt
+│   └── .env.example
+├── ai_engine/                 # AI Rules Matcher & OCR Verification Engine
+│   ├── dataset/
+│   ├── rules/
+│   ├── recommendation/
+│   ├── explainability/
+│   ├── ocr/
+│   ├── utils/
+│   ├── tests/
+│   └── requirements.txt
+├── frontend/                  # React Single Page Application (Vite)
+│   ├── public/
+│   ├── src/                   # Components, pages, hooks, layouts, context, services
+│   ├── package.json
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── README.md
+└── .gitignore
+```
