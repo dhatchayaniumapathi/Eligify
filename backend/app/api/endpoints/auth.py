@@ -26,11 +26,22 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
     
     hashed_password = get_password_hash(user_in.password)
     db_user = User(
-        name=user_in.name,
-        email=user_in.email,
-        password=hashed_password,
-        phone=user_in.phone
-    )
+    name=user_in.name,
+    email=user_in.email,
+    password=hashed_password,
+    phone=user_in.phone,
+
+    age=user_in.age,
+    gender=user_in.gender,
+    state=user_in.state,
+    district=user_in.district,
+    education=user_in.education,
+    occupation=user_in.occupation,
+
+    annual_income=user_in.annual_income,
+    category=user_in.category,
+    disability=user_in.disability,
+)
     
     db.add(db_user)
     db.commit()

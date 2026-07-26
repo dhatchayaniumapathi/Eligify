@@ -1,29 +1,37 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# backend directory
+BASE_DIR = Path(__file__).resolve().parents[2]
+
 
 class Settings(BaseSettings):
     """
     Core application settings.
-    Automatically reads from environment variables and the .env file.
+    Automatically reads values from backend/.env
     """
-    
+
     # Project Info
     PROJECT_NAME: str = "Eligify Backend"
     API_V1_PREFIX: str = "/api/v1"
-    
-    # Database Settings
+
+    # Database
     DATABASE_URL: str
-    
-    # Security and Authentication
-    # SECRET_KEY should be a long, random string in the production .env file
+
+    # Security
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
-    # Application Specific Settings
-    UPLOAD_DIRECTORY: str = "uploads"
-    
-    # Instruct Pydantic to read environment variables from a .env file
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-# Global singleton instance of the settings to be imported by other modules
+    # Uploads
+    UPLOAD_DIRECTORY: str = "uploads"
+
+    # Always load backend/.env irrespective of current working directory
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+
 settings = Settings()

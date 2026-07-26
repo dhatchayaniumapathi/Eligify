@@ -1,21 +1,36 @@
-from datetime import datetime
+from ai_engine.recommendation.recommender import recommend_schemes
+from ai_engine.rules.models import UserProfile
 from app.models.user import User
+
 
 def get_ai_recommendations(profile: User):
     """
-    Placeholder AI recommendation function.
-    The AI team will implement the actual AI evaluation logic mapping the user's 
-    profile variables (age, category, income, etc) to relevant schemes later.
+    Bridge between backend User model and Eligify AI Engine.
     """
-    # Return placeholder data for now so that the Schema and frontend UI 
-    # can develop without being blocked on the AI implementation.
+
+    user_profile = UserProfile(
+        age=profile.age or 0,
+        gender=profile.gender or "All",
+        category=profile.category or "General",
+        annual_income=profile.annual_income or 0,
+        state=profile.state or "All",
+        occupation=profile.occupation or "All",
+        disability=profile.disability or False,
+        education=profile.education or "All",
+    )
+
+    recommendations = recommend_schemes(user_profile)
+
     return [
         {
-            "id": 999,
-            "scheme_name": "Dummy Government Scheme (Pending AI)",
-            "description": "This is a placeholder scheme injected because the core AI logic is pending implementation.",
-            "benefits": "Dummy benefits.",
-            "required_documents": "Aadhar Card, Income Certificate",
-            "created_at": datetime.utcnow()
+            "scheme_id": rec.scheme.scheme_id,
+            "scheme_name": rec.scheme.scheme_name,
+            "description": rec.scheme.description,
+            "benefits": rec.scheme.benefits,
+            "required_documents": "; ".join(rec.scheme.required_documents),
+            "confidence": rec.evaluation.confidence,
+            "explanation": rec.evaluation.explanation,
+            "ranking_score": rec.ranking_score,
         }
+        for rec in recommendations
     ]
