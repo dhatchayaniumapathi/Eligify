@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Save, User, MapPin, Briefcase, GraduationCap, DollarSign, BadgeCheck, Accessibility } from 'lucide-react';
 
 const STATES = [
-  'All', 'Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Karnataka', 'Kerala',
+   'Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Karnataka', 'Kerala',
   'Madhya Pradesh', 'Maharashtra', 'Punjab', 'Rajasthan', 'Tamil Nadu',
   'Telangana', 'Uttar Pradesh', 'West Bengal',
 ];
@@ -24,11 +24,22 @@ const ProfilePage = () => {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
-    await updateUserProfile({ ...form, age: Number(form.age), annual_income: Number(form.annual_income) });
+  e.preventDefault();
+
+  try {
+    await updateUserProfile({
+      ...form,
+      age: Number(form.age),
+      annual_income: Number(form.annual_income),
+    });
+
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Failed to update profile.");
+  }
+};
 
   const inputCls = 'w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all';
   const labelCls = 'block text-xs font-semibold text-gray-700 mb-1.5';
@@ -53,20 +64,45 @@ const ProfilePage = () => {
           </h2>
 
           <form onSubmit={handleSave} className="space-y-5">
-            {/* Row 1 — Name & Email */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+           {/* Row 1 — Name, Email & Phone */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
               <div>
                 <label className={labelCls}>Full Name</label>
-                <input type="text" value={form.full_name || ''} onChange={(e) => field('full_name', e.target.value)}
-                  className={inputCls} placeholder="Full name" />
+                <input
+                  type="text"
+                  value={form.name || ""}
+                  onChange={(e) => field("name", e.target.value)}
+                  className={inputCls}
+                  placeholder="Full name"
+                />
               </div>
+
               <div>
                 <label className={labelCls}>Email Address</label>
-                <input type="email" value={form.email || ''} onChange={(e) => field('email', e.target.value)}
-                  className={inputCls} placeholder="Email" />
+                <input
+                  type="email"
+                  value={form.email || ""}
+                  onChange={(e) => field("email", e.target.value)}
+                  className={inputCls}
+                  placeholder="Email"
+                />
               </div>
+
+              <div>
+                <label className={labelCls}>Phone Number</label>
+                <input
+                  type="tel"
+                  value={form.phone || ""}
+                  onChange={(e) => field("phone", e.target.value)}
+                  className={inputCls}
+                  placeholder="9876543210"
+                />
+              </div>
+
             </div>
 
+           
             {/* Row 2 — Age & Gender */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>

@@ -1,143 +1,138 @@
-// Mock API Service Layer for Eligify Frontend
+import axios from "axios";
 
-import {
-  MOCK_USER_PROFILE,
-  MOCK_SCHEMES,
-  MOCK_OCR_RESULT,
-  MOCK_RECENT_ACTIVITIES,
-} from "../mock/mockData";
+// =========================
+// Axios Instance
+// =========================
 
-// Helper to simulate asynchronous network latency
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+const api = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Attach JWT automatically
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("eligify_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// =========================
+// Authentication
+// =========================
 
 export const authService = {
   async login(credentials) {
-    await delay(400);
-    if (!credentials.email || !credentials.password) {
-      throw new Error("Please provide email and password.");
-    }
+    const response = await api.post("/auth/login/json", credentials);
+
+    const token = response.data.access_token;
+
+    localStorage.setItem("eligify_token", token);
+
+    const profile = await api.get("/profile");
+
     return {
-      token: "mock_jwt_token_eligify_12345",
-      user: MOCK_USER_PROFILE,
+      token,
+      user: profile.data,
     };
   },
 
   async register(userData) {
-    await delay(500);
-    return {
-      token: "mock_jwt_token_eligify_67890",
-      user: { ...MOCK_USER_PROFILE, ...userData },
-    };
+    await api.post("/auth/register", userData);
+
+    return this.login({
+      email: userData.email,
+      password: userData.password,
+    });
+  },
+
+  async logout() {
+    localStorage.removeItem("eligify_token");
   },
 
   async getCurrentUser() {
-    await delay(200);
-    return MOCK_USER_PROFILE;
+    const response = await api.get("/profile");
+    return response.data;
   },
 };
+
+// =========================
+// Profile
+// =========================
 
 export const profileService = {
   async getProfile() {
-    await delay(300);
-    const stored = localStorage.getItem("eligify_user_profile");
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (e) {
-        // Fallback to mock profile
-      }
-    }
-    return MOCK_USER_PROFILE;
+    const response = await api.get("/profile");
+    return response.data;
   },
 
   async updateProfile(profileData) {
-    await delay(400);
-    const current = await this.getProfile();
-    const updated = { ...current, ...profileData };
-    localStorage.setItem("eligify_user_profile", JSON.stringify(updated));
-    return updated;
+    const response = await api.put("/profile", profileData);
+    return response.data;
   },
 };
+
+// =========================
+// AI Eligibility
+// =========================
 
 export const schemeService = {
-  async getSchemes(filters = {}) {
-    await delay(350);
-    let result = [...MOCK_SCHEMES];
-
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      result = result.filter(
-        (s) =>
-          s.scheme_name.toLowerCase().includes(q) ||
-          s.ministry.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q)
-      );
-    }
-
-    if (filters.state && filters.state !== "All") {
-      result = result.filter(
-        (s) => s.state === filters.state || s.state === "All"
-      );
-    }
-
-    if (filters.category && filters.category !== "All") {
-      result = result.filter(
-        (s) => s.category === filters.category || s.category === "All"
-      );
-    }
-
-    if (filters.occupation && filters.occupation !== "All") {
-      result = result.filter(
-        (s) => s.occupation === filters.occupation || s.occupation === "All"
-      );
-    }
-
-    return result;
+  async checkEligibility() {
+    const response = await api.post("/eligibility");
+    return response.data;
   },
+
+  // Temporary until schemes API is added
+  async getSchemes() {
+  const response = await api.get("/schemes");
+  return response.data;
+},
 
   async getSchemeById(id) {
-    await delay(250);
-    const scheme = MOCK_SCHEMES.find((s) => s.scheme_id === id);
-    if (!scheme) {
-      throw new Error(`Scheme with ID '${id}' not found.`);
-    }
-    return scheme;
-  },
-
-  async checkEligibility(profileData = null) {
-    await delay(600);
-    const profile = profileData || (await profileService.getProfile());
-    
-    // Filter eligible schemes based on profile logic
-    const eligibleSchemes = MOCK_SCHEMES.filter((s) => s.eligible);
-
-    return {
-      overall_score: 92,
-      total_matched: eligibleSchemes.length,
-      recommendations: eligibleSchemes,
-      evaluated_profile: profile,
-    };
-  },
+  const response = await api.get(`/schemes/${id}`);
+  return response.data;
+},
 };
+
+// =========================
+// OCR / Documents
+// =========================
 
 export const ocrService = {
-  async uploadDocument(file, documentType = "Aadhaar Card") {
-    await delay(800); // Simulate OCR model processing time
-    if (!file) {
-      throw new Error("No file uploaded.");
-    }
-    return {
-      ...MOCK_OCR_RESULT,
-      document_type: documentType,
-      file_name: file.name,
-      uploaded_at: new Date().toISOString(),
-    };
+  async uploadDocument(file, documentType = "Aadhaar") {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("document_type", documentType);
+
+    const response = await api.post("/upload-document", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  },
+
+  async getDocuments() {
+    const response = await api.get("/documents");
+    return response.data;
   },
 };
+
+// =========================
+// Dashboard Activity
+// =========================
 
 export const activityService = {
   async getRecentActivities() {
-    await delay(200);
-    return MOCK_RECENT_ACTIVITIES;
+    return [];
   },
 };
+
+export default api;

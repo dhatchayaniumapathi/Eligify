@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const LoginPage = () => {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: 'ananya.sharma@example.com', password: 'demo1234' });
+  const [form, setForm] = useState({
+  email: "",
+  password: "",
+});
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,13 +52,6 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* Demo hint */}
-          <div className="mb-5 p-3 rounded-xl bg-sky-50 border border-sky-200 flex items-start gap-2">
-            <Sparkles className="w-4 h-4 text-sky-600 mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-sky-800 font-medium">
-              Demo pre-filled — just click <strong>Sign In</strong> to explore the full app.
-            </p>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -97,7 +93,7 @@ const LoginPage = () => {
               disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 disabled:opacity-60 transition-all"
             >
-              {loading ? <LoadingSpinner label="" /> : <>Sign In <ArrowRight className="w-4 h-4" /></>}
+              {loading ? "Signing In..." : <>Sign In <ArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 

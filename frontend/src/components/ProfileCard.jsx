@@ -20,11 +20,11 @@ const ProfileCard = ({ user, onEdit }) => {
       <div className="flex items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-bold text-xl flex items-center justify-center shadow-md shadow-sky-500/20">
-            {user.full_name?.charAt(0) || "U"}
+            {user.name?.charAt(0) || "U"}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-gray-900">{user.full_name}</h3>
+              <h3 className="text-lg font-bold text-gray-900">{user.name}</h3>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                 <ShieldCheck className="w-3 h-3 text-emerald-600" /> Verified
               </span>
@@ -66,7 +66,7 @@ const ProfileCard = ({ user, onEdit }) => {
             <DollarSign className="w-3.5 h-3.5 text-emerald-600" /> Annual Income
           </p>
           <p className="text-sm font-bold text-emerald-800">
-            Rs. {Number(user.annual_income).toLocaleString("en-IN")}
+            ₹ {Number(user.annual_income || 0).toLocaleString("en-IN")}
           </p>
         </div>
 
@@ -74,7 +74,9 @@ const ProfileCard = ({ user, onEdit }) => {
           <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
             <MapPin className="w-3.5 h-3.5 text-indigo-600" /> Jurisdiction
           </p>
-          <p className="text-sm font-bold text-gray-800">{user.state}</p>
+          <p className="text-sm font-bold text-gray-800">
+          {user.district}, {user.state}
+        </p>
         </div>
 
         <div className="p-3 rounded-2xl bg-gray-50/70 border border-gray-100">

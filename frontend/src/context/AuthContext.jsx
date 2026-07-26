@@ -9,39 +9,49 @@ export const AuthProvider = ({ children }) => {
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "info") => {
-    setToast({ message, type, id: Date.now() });
+    setToast({
+      id: Date.now(),
+      message,
+      type,
+    });
+
     setTimeout(() => setToast(null), 4000);
   };
 
   useEffect(() => {
     const initAuth = async () => {
+      const token = localStorage.getItem("eligify_token");
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const storedToken = localStorage.getItem("eligify_token");
-        if (storedToken) {
-          const profile = await profileService.getProfile();
-          setUser(profile);
-        } else {
-          // Default guest demo user loaded for smooth hackathon testing
-          const profile = await profileService.getProfile();
-          setUser(profile);
-        }
+        const profile = await profileService.getProfile();
+        setUser(profile);
       } catch (err) {
-        console.error("Auth init error:", err);
+        localStorage.removeItem("eligify_token");
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
+
     initAuth();
   }, []);
 
   const login = async (credentials) => {
     setLoading(true);
+
     try {
-      const data = await authService.login(credentials);
-      localStorage.setItem("eligify_token", data.token);
-      setUser(data.user);
-      showToast("Successfully logged in!", "success");
-      return data;
+      const response = await authService.login(credentials);
+
+      setUser(response.user);
+
+      showToast("Login successful!", "success");
+
+      return response.user;
     } catch (err) {
       showToast(err.message || "Login failed", "error");
       throw err;
@@ -52,12 +62,15 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     setLoading(true);
+
     try {
-      const data = await authService.register(userData);
-      localStorage.setItem("eligify_token", data.token);
-      setUser(data.user);
-      showToast("Account created successfully!", "success");
-      return data;
+      const response = await authService.register(userData);
+
+      setUser(response.user);
+
+      showToast("Registration successful!", "success");
+
+      return response.user;
     } catch (err) {
       showToast(err.message || "Registration failed", "error");
       throw err;
@@ -67,7 +80,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("eligify_token");
+    authService.logout();
     setUser(null);
     showToast("Logged out successfully.", "info");
   };
@@ -75,8 +88,11 @@ export const AuthProvider = ({ children }) => {
   const updateUserProfile = async (profileData) => {
     try {
       const updated = await profileService.updateProfile(profileData);
+
       setUser(updated);
+
       showToast("Profile updated successfully!", "success");
+
       return updated;
     } catch (err) {
       showToast(err.message || "Profile update failed", "error");
@@ -88,8 +104,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
         loading,
+        isAuthenticated: !!user,
         login,
         register,
         logout,
@@ -105,8 +121,10 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth must be used inside AuthProvider");
   }
+
   return context;
 };

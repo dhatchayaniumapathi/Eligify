@@ -21,10 +21,10 @@ const Footer = () => {
             <Link to="/" className="hover:text-sky-600 transition-colors">
               Home
             </Link>
-            <Link to="/recommendations" className="hover:text-sky-600 transition-colors">
+            <Link to="/schemes" className="hover:text-sky-600 transition-colors">
               Scheme Directory
             </Link>
-            <Link to="/ocr-upload" className="hover:text-sky-600 transition-colors">
+            <Link to="/ocr" className="hover:text-sky-600 transition-colors">
               OCR Verification
             </Link>
             <Link to="/about" className="hover:text-sky-600 transition-colors">

@@ -9,13 +9,20 @@ const RegisterPage = () => {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
-    full_name: '',
-    email: '',
-    password: '',
-    state: '',
-    age: '',
-    gender: 'Female',
-  });
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+  age: "",
+  gender: "Female",
+  state: "",
+  district: "",
+  education: "",
+  occupation: "",
+  annual_income: "",
+  category: "General",
+  disability: false,
+});
 
   const states = [
     'Andhra Pradesh', 'Bihar', 'Delhi', 'Gujarat', 'Karnataka', 'Kerala',
@@ -68,7 +75,8 @@ const RegisterPage = () => {
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input type="text" required placeholder="Ananya Sharma"
-                  value={form.full_name} onChange={(e) => field('full_name', e.target.value)}
+                  value={form.name}
+                  onChange={(e) => field("name", e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all" />
               </div>
             </div>
@@ -83,7 +91,20 @@ const RegisterPage = () => {
                   className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all" />
               </div>
             </div>
+            <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Phone Number
+            </label>
 
+            <input
+              type="tel"
+              required
+              placeholder="9876543210"
+              value={form.phone}
+              onChange={(e) => field("phone", e.target.value)}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+            />
+          </div>
             {/* Age + Gender */}
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -113,6 +134,115 @@ const RegisterPage = () => {
               </select>
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                District
+              </label>
+
+              <input
+                type="text"
+                required
+                placeholder="Chennai"
+                value={form.district}
+                onChange={(e) => field("district", e.target.value)}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                Education
+              </label>
+
+              <input
+                type="text"
+                required
+                placeholder="B.Tech AI & DS"
+                value={form.education}
+                onChange={(e) => field("education", e.target.value)}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+              />
+            </div>
+
+            <div>
+  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+    Occupation
+  </label>
+
+  <input
+    type="text"
+    required
+    placeholder="Student"
+    value={form.occupation}
+    onChange={(e) => field("occupation", e.target.value)}
+    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+  />
+</div>
+<div>
+  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+    Annual Income (₹)
+  </label>
+
+  <input
+    type="number"
+    min="0"
+    required
+    placeholder="150000"
+    value={form.annual_income}
+    onChange={(e) => field("annual_income", e.target.value)}
+    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+  />
+</div>
+<div>
+  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+    Category
+  </label>
+
+  <select
+    value={form.category}
+    onChange={(e) => field("category", e.target.value)}
+    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
+  >
+    <option>General</option>
+    <option>SC</option>
+    <option>ST</option>
+    <option>OBC</option>
+    <option>EWS</option>
+  </select>
+</div>
+
+{/* Disability Check */}
+<div className="space-y-2">
+  <label className="block text-xs font-semibold text-gray-700 mb-2">
+    Do you have any disability?
+  </label>
+
+  <div className="flex items-center gap-6">
+    <button
+      type="button"
+      onClick={() => field("disability", true)}
+      className={`px-4 py-2 text-sm rounded-lg border transition-all ${
+        form.disability
+          ? "bg-green-50 border-green-400 text-green-700"
+          : "bg-gray-50 border-gray-200 text-gray-600"
+      }`}
+    >
+      Yes
+    </button>
+
+    <button
+      type="button"
+      onClick={() => field("disability", false)}
+      className={`px-4 py-2 text-sm rounded-lg border transition-all ${
+        !form.disability
+          ? "bg-red-50 border-red-400 text-red-700"
+          : "bg-gray-50 border-gray-200 text-gray-600"
+      }`}
+    >
+      No
+    </button>
+  </div>
+</div>    
             {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">Password</label>
@@ -130,7 +260,15 @@ const RegisterPage = () => {
 
             <button type="submit" disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 disabled:opacity-60 transition-all mt-2">
-              <CheckCircle2 className="w-4 h-4" /> Create Account <ArrowRight className="w-4 h-4" />
+              {loading ? (
+                "Creating Account..."
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  Create Account
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 

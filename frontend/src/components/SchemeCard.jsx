@@ -1,98 +1,183 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, Building2, MapPin, Gift, FileText, ChevronRight } from "lucide-react";
-import EligibilityBadge from "./EligibilityBadge";
+import {
+  Brain,
+  Award,
+  FileText,
+  Gift,
+  ChevronRight,
+  CheckCircle2,
+} from "lucide-react";
 
 const SchemeCard = ({ scheme }) => {
+  const documents = Array.isArray(scheme.required_documents)
+    ? scheme.required_documents
+    : String(scheme.required_documents || "")
+        .split(",")
+        .map((doc) => doc.trim())
+        .filter(Boolean);
+
+  const confidence = Number(scheme.confidence || 0);
+  const ranking = Number(scheme.ranking_score || 0);
+
+  const confidenceColor =
+    confidence >= 90
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : confidence >= 70
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : "bg-rose-50 text-rose-700 border-rose-200";
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md hover:border-sky-200 transition-all flex flex-col justify-between group">
-      <div>
-        {/* Header Badges */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">
-              <MapPin className="w-3 h-3" /> {scheme.state}
-            </span>
-            {scheme.category_tag && (
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                {scheme.category_tag}
-              </span>
-            )}
-          </div>
-          <EligibilityBadge eligible={scheme.eligible} confidence={scheme.confidence} size="sm" />
-        </div>
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
 
-        {/* Scheme Title & Ministry */}
-        <Link to={`/scheme/${scheme.scheme_id}`} className="block group-hover:text-sky-600 transition-colors">
-          <h3 className="text-lg font-bold text-gray-900 leading-snug mb-1">
-            {scheme.scheme_name}
-          </h3>
-        </Link>
-        <p className="text-xs font-medium text-gray-500 flex items-center gap-1 mb-4">
-          <Building2 className="w-3.5 h-3.5 text-gray-400" />
-          {scheme.ministry}
-        </p>
+      <div className="p-6">
 
-        {/* Benefit Highlight */}
-        <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50/50 border border-emerald-100 mb-4">
-          <div className="flex items-start gap-2">
-            <Gift className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <p className="text-xs font-medium text-emerald-900 leading-relaxed">
-              {scheme.benefits}
+        {/* Header */}
+
+        <div className="flex justify-between items-start mb-4">
+
+          <div>
+
+            <h3 className="text-xl font-bold text-gray-900 leading-snug">
+              {scheme.scheme_name}
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              AI Recommended Government Scheme
             </p>
+
           </div>
+
+          <div
+            className={`px-3 py-1 rounded-full border text-sm font-semibold ${confidenceColor}`}
+          >
+            {confidence.toFixed(1)}%
+          </div>
+
         </div>
 
-        {/* Description snippet */}
-        <p className="text-xs text-gray-600 line-clamp-2 mb-4 leading-relaxed">
+        {/* Description */}
+
+        <p className="text-gray-600 text-sm leading-6 mb-5">
           {scheme.description}
         </p>
 
-        {/* Required Documents Pill List */}
-        {scheme.required_documents && scheme.required_documents.length > 0 && (
-          <div className="mb-4">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <FileText className="w-3 h-3" /> Required Documents
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {scheme.required_documents.slice(0, 3).map((doc, idx) => (
+        {/* Benefits */}
+
+        <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 mb-5">
+
+          <div className="flex items-center gap-2 mb-2">
+
+            <Gift className="w-4 h-4 text-emerald-600" />
+
+            <h4 className="font-semibold text-emerald-800">
+              Benefits
+            </h4>
+
+          </div>
+
+          <p className="text-sm text-emerald-700 leading-6">
+            {scheme.benefits}
+          </p>
+
+        </div>
+
+        {/* AI Explanation */}
+
+        <div className="rounded-xl bg-sky-50 border border-sky-100 p-4 mb-5">
+
+          <div className="flex items-center gap-2 mb-2">
+
+            <Brain className="w-4 h-4 text-sky-600" />
+
+            <h4 className="font-semibold text-sky-800">
+              Why AI Recommended This
+            </h4>
+
+          </div>
+
+          <p className="text-sm text-sky-700 leading-6">
+            {scheme.explanation}
+          </p>
+
+        </div>
+
+        {/* Ranking */}
+
+        <div className="flex items-center gap-2 mb-5">
+
+          <Award className="w-5 h-5 text-amber-500" />
+
+          <span className="font-medium text-gray-700">
+            Ranking Score
+          </span>
+
+          <span className="ml-auto font-bold text-amber-600">
+            {ranking.toFixed(1)}
+          </span>
+
+        </div>
+
+        {/* Required Documents */}
+
+        <div>
+
+          <div className="flex items-center gap-2 mb-3">
+
+            <FileText className="w-4 h-4 text-gray-500" />
+
+            <h4 className="font-semibold text-gray-800">
+              Required Documents
+            </h4>
+
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+
+            {documents.length > 0 ? (
+              documents.map((doc, index) => (
                 <span
-                  key={idx}
-                  className="text-[11px] font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md"
+                  key={index}
+                  className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium"
                 >
                   {doc}
                 </span>
-              ))}
-              {scheme.required_documents.length > 3 && (
-                <span className="text-[11px] font-medium text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md">
-                  +{scheme.required_documents.length - 3} more
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+              ))
+            ) : (
+              <span className="text-sm text-gray-500">
+                No documents specified
+              </span>
+            )}
 
-      {/* Action Footer */}
-      <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+          </div>
+
+        </div>
+
+      </div>
+            {/* Footer */}
+
+      <div className="border-t border-gray-100 px-6 py-4 flex items-center justify-between">
+
+        <div className="flex items-center gap-2 text-sm text-emerald-600 font-semibold">
+
+          <CheckCircle2 className="w-4 h-4" />
+
+          AI Verified Recommendation
+
+        </div>
+
         <Link
           to={`/scheme/${scheme.scheme_id}`}
-          className="text-xs font-semibold text-sky-700 hover:text-sky-900 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+          className="inline-flex items-center gap-1 text-sky-600 hover:text-sky-800 font-semibold text-sm"
         >
-          View Full Breakdown <ChevronRight className="w-3.5 h-3.5" />
+          View Details
+
+          <ChevronRight className="w-4 h-4" />
+
         </Link>
 
-        {scheme.application_link && (
-          <a
-            href={scheme.application_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 shadow-sm transition-colors"
-          >
-            Apply Now <ExternalLink className="w-3 h-3" />
-          </a>
-        )}
       </div>
+
     </div>
   );
 };

@@ -22,8 +22,8 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/", icon: Home },
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "Schemes", path: "/recommendations", icon: Sparkles },
-    { name: "OCR Verify", path: "/ocr-upload", icon: FileCheck },
+    { name: "Schemes", path: "/schemes", icon: Sparkles },
+    { name: "OCR Verify", path: "/ocr", icon: FileCheck },
     { name: "About", path: "/about", icon: Info },
   ];
 
@@ -79,11 +79,11 @@ const Navbar = () => {
                   className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center text-sm border border-sky-200">
-                    {user?.full_name?.charAt(0) || "U"}
+                    {user?.name?.charAt(0) || "U"}
                   </div>
                   <div className="text-left">
                     <p className="text-xs font-semibold text-gray-800 leading-none">
-                      {user?.full_name}
+                      {user?.name}
                     </p>
                     <p className="text-[10px] text-emerald-600 font-medium">
                       ✓ Profile Verified
@@ -159,7 +159,7 @@ const Navbar = () => {
                 className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-700"
               >
                 <User className="w-5 h-5 text-gray-500" />
-                My Profile ({user?.full_name})
+                My Profile ({user?.name})
               </Link>
               <button
                 onClick={() => {

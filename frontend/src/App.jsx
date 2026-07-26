@@ -31,8 +31,8 @@ const App = () => (
       <Route path="/ocr"        element={<OCRUploadPage />} />
 
       {/* Legacy / alternative paths matching previous nav links */}
-      <Route path="/recommendations" element={<SchemesPage />} />
-      <Route path="/ocr-upload"      element={<OCRUploadPage />} />
+      <Route path="/schemes" element={<SchemesPage />} />
+      <Route path="/ocr"      element={<OCRUploadPage />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFoundPage />} />

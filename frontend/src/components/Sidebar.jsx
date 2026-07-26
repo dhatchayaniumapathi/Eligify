@@ -17,8 +17,8 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: "Overview Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "Eligible Schemes", path: "/recommendations", icon: Sparkles, badge: "4 Qualified" },
-    { name: "OCR Verification", path: "/ocr-upload", icon: FileCheck, badge: "Verified" },
+    { name: "Eligible Schemes", path: "/schemes", icon: Sparkles, badge: "4 Qualified" },
+    { name: "OCR Verification", path: "/ocr", icon: FileCheck, badge: "Verified" },
     { name: "Profile & Settings", path: "/profile", icon: User },
     { name: "About Eligify", path: "/about", icon: Info },
   ];
@@ -30,11 +30,11 @@ const Sidebar = () => {
         <div className="p-3.5 mb-6 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50/50 border border-sky-100">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-sky-600 text-white font-bold flex items-center justify-center shadow-sm">
-              {user.full_name?.charAt(0)}
+              {user.name?.charAt(0)}
             </div>
             <div className="overflow-hidden">
               <h4 className="text-sm font-bold text-gray-900 truncate">
-                {user.full_name}
+                {user.name}
               </h4>
               <p className="text-xs text-gray-500 truncate">{user.state}</p>
             </div>

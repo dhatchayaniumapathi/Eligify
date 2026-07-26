@@ -1,35 +1,37 @@
-import React, { useState } from 'react';
-import MainLayout from '../layouts/MainLayout';
-import FileUpload from '../components/FileUpload';
-import { ocrService } from '../services/api';
+import React, { useState } from "react";
+import MainLayout from "../layouts/MainLayout";
+import FileUpload from "../components/FileUpload";
+import { ocrService } from "../services/api";
 import {
-  FileCheck, ShieldCheck, AlertTriangle, CheckCircle2, XCircle,
-  Hash, User, Calendar, MapPin, BadgeCheck, DollarSign,
-} from 'lucide-react';
-
-const FIELD_META = {
-  aadhaar_number: { label: 'Aadhaar Number', icon: Hash },
-  name: { label: 'Full Name', icon: User },
-  dob: { label: 'Date of Birth', icon: Calendar },
-  gender: { label: 'Gender', icon: User },
-  state: { label: 'State', icon: MapPin },
-  category: { label: 'Category', icon: BadgeCheck },
-  annual_income: { label: 'Annual Income', icon: DollarSign },
-};
+  FileCheck,
+  Upload,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Calendar,
+  Hash,
+} from "lucide-react";
 
 const OCRUploadPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState(null);
-  const [docType, setDocType] = useState('Aadhaar Card');
+  const [error, setError] = useState("");
 
   const handleUpload = async (file) => {
     setIsUploading(true);
     setResult(null);
+    setError("");
+
     try {
-      const res = await ocrService.uploadDocument(file, docType);
-      setResult(res);
-    } catch (e) {
-      console.error(e);
+      const response = await ocrService.uploadDocument(file);
+      setResult(response);
+    } catch (err) {
+      console.error(err);
+      setError(
+        err?.response?.data?.detail ||
+          err?.message ||
+          "Failed to upload document."
+      );
     } finally {
       setIsUploading(false);
     }
@@ -37,134 +39,180 @@ const OCRUploadPage = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-4xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
-            <FileCheck className="w-6 h-6 text-sky-600" /> OCR Document Verification
+      <div className="max-w-4xl mx-auto">
+
+        {/* Header */}
+
+        <div className="mb-8">
+          <h1 className="flex items-center gap-3 text-3xl font-bold text-gray-900">
+            <FileCheck className="w-8 h-8 text-sky-600" />
+            Document Upload
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Upload your identity or income document. Our AI will extract and verify your credentials automatically.
+
+          <p className="mt-2 text-gray-500">
+            Upload your government documents. They will be securely stored and
+            marked for verification.
           </p>
         </div>
 
-        {/* Document type selector */}
-        <div className="mb-5">
-          <p className="text-xs font-semibold text-gray-700 mb-2">Select Document Type</p>
-          <div className="flex flex-wrap gap-2">
-            {['Aadhaar Card', 'Income Certificate', 'Caste Certificate', 'Disability Certificate'].map((t) => (
-              <button key={t} type="button" onClick={() => setDocType(t)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                  docType === t
-                    ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                }`}>
-                {t}
-              </button>
-            ))}
+        {/* Upload */}
+
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 mb-6">
+
+          <div className="flex items-center gap-2 mb-4">
+            <Upload className="w-5 h-5 text-sky-600" />
+            <h2 className="text-lg font-semibold">
+              Upload Document
+            </h2>
           </div>
+
+          <FileUpload
+            onUpload={handleUpload}
+            isUploading={isUploading}
+          />
+
+          {error && (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+              {error}
+            </div>
+          )}
+
         </div>
 
-        {/* Upload Component */}
-        <div className="mb-6">
-          <FileUpload onUpload={handleUpload} isUploading={isUploading} />
-        </div>
+        {/* Success */}
 
-        {/* Verification Result */}
         {result && (
-          <div className="space-y-5">
-            {/* Verification Status Banner */}
-            <div className={`rounded-3xl border p-5 flex items-start gap-4 ${
-              result.is_verified
-                ? 'bg-emerald-50 border-emerald-200'
-                : 'bg-amber-50 border-amber-200'
-            }`}>
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                result.is_verified ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-              }`}>
-                {result.is_verified
-                  ? <ShieldCheck className="w-6 h-6" />
-                  : <AlertTriangle className="w-6 h-6" />}
-              </div>
-              <div>
-                <h3 className={`text-base font-bold mb-1 ${result.is_verified ? 'text-emerald-900' : 'text-amber-900'}`}>
-                  {result.is_verified ? 'Document Verified Successfully' : 'Partial Verification — Review Required'}
-                </h3>
-                <p className="text-sm text-gray-600">{result.summary}</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                    result.is_verified ? 'bg-emerald-200 text-emerald-800' : 'bg-amber-200 text-amber-800'
-                  }`}>
-                    Match Score: {Math.round(result.match_score * 100)}%
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {result.matched_fields?.length} of{' '}
-                    {(result.matched_fields?.length || 0) + (result.mismatched_fields?.length || 0)} fields matched
-                  </span>
+          <div className="space-y-6">
+
+            <div className="rounded-3xl border border-green-200 bg-green-50 p-6">
+
+              <div className="flex items-center gap-3">
+
+                <div className="rounded-full bg-green-100 p-2">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
                 </div>
+
+                <div>
+                  <h2 className="text-lg font-bold text-green-800">
+                    Upload Successful
+                  </h2>
+
+                  <p className="text-green-700">
+                    {result.message}
+                  </p>
+                </div>
+
               </div>
+
             </div>
 
-            {/* Extracted Fields Card */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-              <h3 className="text-base font-bold text-gray-900 mb-4">Extracted Document Fields</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {Object.entries(result.extracted_fields || {}).map(([key, field]) => {
-                  const meta = FIELD_META[key] || { label: key, icon: FileCheck };
-                  const Icon = meta.icon;
-                  const isMatched = result.matched_fields?.includes(key);
-                  const isMismatched = result.mismatched_fields?.includes(key);
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
 
-                  return (
-                    <div key={key} className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isMismatched
-                        ? 'bg-rose-50 border-rose-200'
-                        : isMatched
-                        ? 'bg-emerald-50 border-emerald-200'
-                        : 'bg-gray-50 border-gray-100'
-                    }`}>
-                      <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
-                        isMismatched ? 'text-rose-600' : isMatched ? 'text-emerald-600' : 'text-gray-400'
-                      }`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{meta.label}</p>
-                        <p className="text-sm font-bold text-gray-900 truncate">{field.field_value || '—'}</p>
-                        <p className="text-[10px] text-gray-400">
-                          Confidence: {Math.round((field.confidence || 0) * 100)}%
-                        </p>
-                      </div>
-                      {isMatched && <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />}
-                      {isMismatched && <XCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+              <h3 className="text-lg font-semibold mb-6">
+                Document Details
+              </h3>
 
-        {/* How it works */}
-        {!result && !isUploading && (
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-4">How OCR Verification Works</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { step: '1', title: 'Upload Document', desc: 'Scan or photograph your government ID or certificate.' },
-                { step: '2', title: 'AI Text Extraction', desc: 'EasyOCR engine extracts key fields with confidence scoring.' },
-                { step: '3', title: 'Profile Cross-Check', desc: 'Extracted fields are verified against your profile claims.' },
-              ].map(({ step, title, desc }) => (
-                <div key={step} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 font-black text-sm flex items-center justify-center flex-shrink-0">
-                    {step}
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-sky-600" />
                   <div>
-                    <p className="text-sm font-bold text-gray-900">{title}</p>
-                    <p className="text-xs text-gray-500 leading-relaxed mt-0.5">{desc}</p>
+                    <p className="text-xs text-gray-500">
+                      Filename
+                    </p>
+                    <p className="font-semibold">
+                      {result.document.filename}
+                    </p>
                   </div>
                 </div>
-              ))}
+
+                <div className="flex items-center gap-3">
+                  <Hash className="w-5 h-5 text-sky-600" />
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Document ID
+                    </p>
+                    <p className="font-semibold">
+                      #{result.document.id}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Verification Status
+                    </p>
+
+                    <span className="inline-block mt-1 rounded-full bg-yellow-100 px-3 py-1 text-sm font-semibold text-yellow-800">
+                      {result.document.verification_status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-indigo-600" />
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Uploaded At
+                    </p>
+
+                    <p className="font-semibold">
+                      {new Date(
+                        result.document.uploaded_at
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
+
           </div>
         )}
+
+        {/* Info */}
+
+        {!result && !isUploading && (
+          <div className="mt-8 bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+
+            <h3 className="text-lg font-semibold mb-4">
+              Supported Documents
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-4">
+
+              <div className="rounded-xl bg-sky-50 p-4">
+                <p className="font-semibold">
+                  Identity Documents
+                </p>
+
+                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                  <li>• Aadhaar Card</li>
+                  <li>• PAN Card</li>
+                  <li>• Voter ID</li>
+                </ul>
+              </div>
+
+              <div className="rounded-xl bg-indigo-50 p-4">
+                <p className="font-semibold">
+                  Certificates
+                </p>
+
+                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                  <li>• Income Certificate</li>
+                  <li>• Caste Certificate</li>
+                  <li>• Disability Certificate</li>
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
       </div>
     </MainLayout>
   );
