@@ -55,8 +55,8 @@ def match_income(user_income: float, max_income: float) -> Tuple[bool, str]:
     if max_income <= 0.0:
         return True, "No maximum annual income cap for this scheme."
     if user_income <= max_income:
-        return True, f"Annual income (₹{user_income:,.2f}) is within maximum ceiling of ₹{max_income:,.2f}."
-    return False, f"Annual income (₹{user_income:,.2f}) exceeds maximum threshold of ₹{max_income:,.2f}."
+        return True, f"Annual income (Rs. {user_income:,.2f}) is within maximum ceiling of Rs. {max_income:,.2f}."
+    return False, f"Annual income (Rs. {user_income:,.2f}) exceeds maximum threshold of Rs. {max_income:,.2f}."
 
 
 def match_state(user_state: str, scheme_state: str) -> Tuple[bool, str]:
