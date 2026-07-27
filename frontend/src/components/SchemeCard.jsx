@@ -17,7 +17,7 @@ const SchemeCard = ({ scheme }) => {
         .map((doc) => doc.trim())
         .filter(Boolean);
 
-  const confidence = Number(scheme.confidence || 0);
+  const confidence = Number(scheme.confidence || 0)*100;
   const ranking = Number(scheme.ranking_score || 0);
 
   const confidenceColor =
@@ -167,13 +167,11 @@ const SchemeCard = ({ scheme }) => {
         </div>
 
         <Link
-          to={`/scheme/${scheme.scheme_id}`}
+          to={`/scheme/${scheme.id ?? scheme.scheme_id}`}
           className="inline-flex items-center gap-1 text-sky-600 hover:text-sky-800 font-semibold text-sm"
         >
           View Details
-
           <ChevronRight className="w-4 h-4" />
-
         </Link>
 
       </div>

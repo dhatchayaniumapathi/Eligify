@@ -15,9 +15,10 @@ const SchemeDetailPage = () => {
     const fetchScheme = async () => {
       try {
         const data = await schemeService.getSchemeById(id);
+        
         setScheme(data);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Error loading scheme:", error);
       } finally {
         setLoading(false);
       }
@@ -38,8 +39,11 @@ const SchemeDetailPage = () => {
     return (
       <MainLayout>
         <div className="text-center py-20">
-          <h2 className="text-xl font-bold">Scheme Not Found</h2>
-          <Link to="/schemes" className="text-sky-600 mt-4 inline-block">
+          <h2 className="text-2xl font-bold">Scheme Not Found</h2>
+          <Link
+            to="/schemes"
+            className="inline-block mt-4 text-sky-600 hover:underline"
+          >
             Back to Schemes
           </Link>
         </div>
@@ -49,61 +53,69 @@ const SchemeDetailPage = () => {
 
   const documents = String(scheme.required_documents || "")
     .split(",")
-    .map((d) => d.trim())
+    .map((doc) => doc.trim())
     .filter(Boolean);
 
   return (
     <MainLayout>
-      <Link
-        to="/schemes"
-        className="inline-flex items-center gap-2 text-sky-600 mb-6"
-      >
-        <ArrowLeft size={18} />
-        Back
-      </Link>
+      <div className="max-w-5xl mx-auto">
 
-      <div className="bg-white rounded-3xl shadow-sm border p-8">
+        <Link
+          to="/schemes"
+          className="inline-flex items-center gap-2 text-sky-600 mb-6 hover:underline"
+        >
+          <ArrowLeft size={18} />
+          Back to Schemes
+        </Link>
 
-        <h1 className="text-3xl font-bold mb-6">
-          {scheme.scheme_name}
-        </h1>
+        <div className="bg-white rounded-3xl shadow-sm border p-8">
 
-        <div className="mb-8">
-          <h2 className="font-bold text-lg mb-3">
-            Description
-          </h2>
+          <h1 className="text-3xl font-bold mb-6">
+            {scheme.scheme_name}
+          </h1>
 
-          <p className="text-gray-600 leading-7">
-            {scheme.description}
-          </p>
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-3">
+              Description
+            </h2>
+
+            <p className="text-gray-700 leading-7">
+              {scheme.description}
+            </p>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold flex items-center gap-2 mb-3">
+              <Gift size={20} />
+              Benefits
+            </h2>
+
+            <p className="text-gray-700 leading-7">
+              {scheme.benefits}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold flex items-center gap-2 mb-3">
+              <FileText size={20} />
+              Required Documents
+            </h2>
+
+            <ul className="list-disc pl-6 space-y-2">
+              {documents.length > 0 ? (
+                documents.map((doc, index) => (
+                  <li key={index}>{doc}</li>
+                ))
+              ) : (
+                <li>No documents specified.</li>
+              )}
+            </ul>
+          </div>
+
         </div>
-
-        <div className="mb-8">
-          <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <Gift size={20} />
-            Benefits
-          </h2>
-
-          <p className="text-gray-600 leading-7">
-            {scheme.benefits}
-          </p>
-        </div>
-
-        <div>
-          <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <FileText size={20} />
-            Required Documents
-          </h2>
-
-          <ul className="list-disc ml-6 space-y-2">
-            {documents.map((doc, index) => (
-              <li key={index}>{doc}</li>
-            ))}
-          </ul>
-        </div>
-
       </div>
     </MainLayout>
   );
 };
 
+export default SchemeDetailPage;

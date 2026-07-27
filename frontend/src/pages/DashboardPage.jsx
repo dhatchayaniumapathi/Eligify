@@ -53,7 +53,7 @@ const DashboardPage = () => {
 
   const highestConfidence =
     schemes.length > 0
-      ? Math.max(...schemes.map((s) => Number(s.confidence || 0)))
+      ? Math.max(...schemes.map((s) => Number(s.confidence || 0)*100))
       : 0;
 
   const highestRanking =
